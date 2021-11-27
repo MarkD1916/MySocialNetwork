@@ -9,14 +9,15 @@ import com.vmakd1916gmail.com.login_logout_register.DB.MySocialNetworkDAO
 import com.vmakd1916gmail.com.login_logout_register.DB.MySocialNetworkDatabase
 import com.vmakd1916gmail.com.login_logout_register.R
 import com.vmakd1916gmail.com.login_logout_register.repositories.auth.AuthRepositoryImpl
-import com.vmakd1916gmail.com.login_logout_register.repositories.verify.VerifyRepositoryImpl
-import com.vmakd1916gmail.com.login_logout_register.services.AuthService
-import com.vmakd1916gmail.com.login_logout_register.services.VerifyService
+import com.vmakd1916gmail.com.login_logout_register.api.AuthApi
+import com.vmakd1916gmail.com.login_logout_register.other.RequestTokenInterceptor
+import com.vmakd1916gmail.com.login_logout_register.other.TokenPreferences
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
@@ -44,38 +45,44 @@ object AppModule {
             .diskCacheStrategy(DiskCacheStrategy.DATA)
     )
 
+    @Singleton
     @Provides
-    fun providesBaseUrl(): String = "https://vmakdsocialnetwork.herokuapp.com/"
+    fun provideTokenPreferences(@ApplicationContext context: Context) =
+        TokenPreferences(context)
+
+    @Provides
+    fun providesBaseUrl(): String = "https://vmakd1916mdsocialnetworkserver.herokuapp.com"
 
     @Provides
     @Singleton
-    fun provideRetrofit(BASE_URL: String): Retrofit = Retrofit.Builder()
+    fun provideRequestInterceptor(tokenPreferences: TokenPreferences): RequestTokenInterceptor =
+        RequestTokenInterceptor(tokenPreferences)
+
+    @Provides
+    fun provideOkHttpClient(requestTokenInterceptor: RequestTokenInterceptor): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor(requestTokenInterceptor)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(BASE_URL: String, client: OkHttpClient): Retrofit = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(BASE_URL)
+        .client(client)
         .build()
 
     @Provides
     @Singleton
-    fun provideAuthService(retrofit: Retrofit): AuthService =
-        retrofit.create(AuthService::class.java)
+    fun provideAuthService(retrofit: Retrofit): AuthApi =
+        retrofit.create(AuthApi::class.java)
 
     @Provides
     @Singleton
     fun provideAuthRepository(
-        authService: AuthService,
-        mySocialNetworkDAO: MySocialNetworkDAO
-    ): AuthRepositoryImpl = AuthRepositoryImpl(authService, mySocialNetworkDAO)
-
-    @Provides
-    @Singleton
-    fun provideVerifyService(retrofit: Retrofit): VerifyService =
-        retrofit.create(VerifyService::class.java)
-
-    @Provides
-    @Singleton
-    fun provideVerifyRepository(
-        verifyServiceService: VerifyService,
-    ): VerifyRepositoryImpl = VerifyRepositoryImpl(verifyServiceService)
+        authApi: AuthApi
+    ): AuthRepositoryImpl = AuthRepositoryImpl(authApi)
 
 
     @Provides

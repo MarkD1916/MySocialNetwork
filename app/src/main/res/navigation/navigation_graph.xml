@@ -34,4 +34,8 @@
             android:id="@+id/action_dataForUser_to_loginFragment"
             app:destination="@id/loginFragment" />
     </fragment>
+    <activity
+        android:id="@+id/authActivity"
+        android:name="com.vmakd1916gmail.com.login_logout_register.ui.auth.AuthActivity"
+        android:label="AuthActivity" />
 </navigation>

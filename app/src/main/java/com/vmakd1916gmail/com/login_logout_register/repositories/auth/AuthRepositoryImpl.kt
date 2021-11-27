@@ -8,7 +8,8 @@ import com.vmakd1916gmail.com.login_logout_register.models.network.UserResponse
 import com.vmakd1916gmail.com.login_logout_register.other.Resource
 import com.vmakd1916gmail.com.login_logout_register.other.getAuthDataFromServer
 import com.vmakd1916gmail.com.login_logout_register.other.safeCall
-import com.vmakd1916gmail.com.login_logout_register.services.AuthService
+import com.vmakd1916gmail.com.login_logout_register.api.AuthApi
+import com.vmakd1916gmail.com.login_logout_register.other.TokenPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
@@ -17,8 +18,7 @@ import javax.inject.Inject
 private const val TAG = "AuthRepositoryImpl"
 
 class AuthRepositoryImpl @Inject constructor(
-    private val authService: AuthService,
-    private val mySocialNetworkDAO: MySocialNetworkDAO
+    private val authApi: AuthApi
 ) {
 
 
@@ -27,10 +27,7 @@ class AuthRepositoryImpl @Inject constructor(
 
         return withContext(Dispatchers.IO) {
             safeCall {
-                if (!Variables.isNetworkConnected){
-                    throw Exception("No Internet connection")
-                }
-                val call = authService.registerUser(userResponse)
+                val call = authApi.registerUser(userResponse)
                 val result = getAuthDataFromServer(call)
                 Resource.Success(result)
             }
@@ -42,26 +39,11 @@ class AuthRepositoryImpl @Inject constructor(
 
         return withContext(Dispatchers.IO) {
             safeCall {
-                if (!Variables.isNetworkConnected){
-                    throw Exception("No Internet connection")
-                }
-                val call = authService.authUser(user)
+                val call = authApi.authUser(user)
                 val result = getAuthDataFromServer(call)
                 Resource.Success(result)
             }
         }
     }
-
-
-
-
-    fun getToke(): LiveData<Token> {
-        return mySocialNetworkDAO.getToken()
-    }
-
-    suspend fun insertToken(token: Token) {
-        mySocialNetworkDAO.insertToken(token)
-    }
-
 
 }

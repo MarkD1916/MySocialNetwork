@@ -2,19 +2,23 @@ package com.vmakd1916gmail.com.login_logout_register.ui.auth.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.vmakd1916gmail.com.login_logout_register.R
+import com.vmakd1916gmail.com.login_logout_register.api.AuthApi
 import com.vmakd1916gmail.com.login_logout_register.databinding.FragmentLoginBinding
 import com.vmakd1916gmail.com.login_logout_register.other.APP_AUTH_ACTIVITY
 import com.vmakd1916gmail.com.login_logout_register.other.EventObserver
+import com.vmakd1916gmail.com.login_logout_register.other.TokenPreferences
 import com.vmakd1916gmail.com.login_logout_register.ui.auth.VM.AuthViewModel
 import com.vmakd1916gmail.com.login_logout_register.ui.main.MainActivity
 import com.vmakd1916gmail.com.login_logout_register.ui.snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 private const val TAG = "LoginFragment"
 
@@ -22,7 +26,8 @@ private const val TAG = "LoginFragment"
 class LoginFragment : Fragment(), View.OnClickListener {
     private var _binding: FragmentLoginBinding? = null
     val mBinding get() = _binding!!
-
+    @Inject
+    lateinit var tokenPreferences: TokenPreferences
     private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreateView(
@@ -38,10 +43,9 @@ class LoginFragment : Fragment(), View.OnClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         mBinding.goToRegisterBtnId.setOnClickListener {
-
-                APP_AUTH_ACTIVITY.navController.navigate(R.id.action_loginFragment_to_registerFragment)
-
+            APP_AUTH_ACTIVITY.navController.navigate(R.id.action_loginFragment_to_registerFragment)
         }
+
         mBinding.loginBtnId.setOnClickListener(this)
         authViewModel.authStatus.observe(viewLifecycleOwner, EventObserver(
             onError = {
@@ -52,12 +56,14 @@ class LoginFragment : Fragment(), View.OnClickListener {
                 mBinding.loginProgressBar.visibility = View.VISIBLE
             }
 
-        ){
+        ) {
+            tokenPreferences.setStoredToken(it.token)
             Intent(requireContext(), MainActivity::class.java).also {
                 startActivity(it)
                 requireActivity().finish()
             }
-        })
+        }
+       )
 
     }
 
@@ -70,5 +76,10 @@ class LoginFragment : Fragment(), View.OnClickListener {
             authViewModel.authUser(userResponse)
 
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding=null
     }
 }
