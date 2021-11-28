@@ -5,14 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.vmakd1916gmail.com.login_logout_register.R
 import com.vmakd1916gmail.com.login_logout_register.databinding.FragmentRegisterBinding
-import com.vmakd1916gmail.com.login_logout_register.models.network.RefreshTokenResponse
 import com.vmakd1916gmail.com.login_logout_register.models.network.UserResponse
-import com.vmakd1916gmail.com.login_logout_register.models.network.VerifyTokenResponse
 import com.vmakd1916gmail.com.login_logout_register.other.APP_AUTH_ACTIVITY
 import com.vmakd1916gmail.com.login_logout_register.other.EventObserver
 import com.vmakd1916gmail.com.login_logout_register.other.TokenPreferences
