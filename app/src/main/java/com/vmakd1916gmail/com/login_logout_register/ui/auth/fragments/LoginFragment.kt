@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.jakewharton.rxbinding2.widget.RxTextView
 import com.vmakd1916gmail.com.login_logout_register.R
 import com.vmakd1916gmail.com.login_logout_register.api.AuthApi
 import com.vmakd1916gmail.com.login_logout_register.databinding.FragmentLoginBinding
@@ -18,6 +19,7 @@ import com.vmakd1916gmail.com.login_logout_register.ui.auth.VM.AuthViewModel
 import com.vmakd1916gmail.com.login_logout_register.ui.main.MainActivity
 import com.vmakd1916gmail.com.login_logout_register.ui.snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 
 private const val TAG = "LoginFragment"
@@ -26,6 +28,7 @@ private const val TAG = "LoginFragment"
 class LoginFragment : Fragment(), View.OnClickListener {
     private var _binding: FragmentLoginBinding? = null
     val mBinding get() = _binding!!
+
     @Inject
     lateinit var tokenPreferences: TokenPreferences
     private val authViewModel: AuthViewModel by viewModels()
@@ -63,10 +66,8 @@ class LoginFragment : Fragment(), View.OnClickListener {
                 requireActivity().finish()
             }
         }
-       )
-
+        )
     }
-
 
     override fun onClick(v: View) {
         if (v.id == R.id.login_btn_id) {
@@ -80,6 +81,6 @@ class LoginFragment : Fragment(), View.OnClickListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding=null
+        _binding = null
     }
 }

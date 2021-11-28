@@ -2,11 +2,13 @@ package com.vmakd1916gmail.com.login_logout_register.ui.auth.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.jakewharton.rxbinding2.widget.RxTextView
 import com.vmakd1916gmail.com.login_logout_register.R
 import com.vmakd1916gmail.com.login_logout_register.databinding.FragmentRegisterBinding
 import com.vmakd1916gmail.com.login_logout_register.models.network.UserResponse
@@ -17,6 +19,7 @@ import com.vmakd1916gmail.com.login_logout_register.ui.auth.VM.AuthViewModel
 import com.vmakd1916gmail.com.login_logout_register.ui.main.MainActivity
 import com.vmakd1916gmail.com.login_logout_register.ui.snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 
 private const val TAG = "RegisterFragment"
@@ -88,36 +91,46 @@ class RegisterFragment : Fragment(), View.OnClickListener {
 //        mBinding.goToLoginBtnId.startAnimation(fromRightMoveAnim)
 //        mBinding.registerBtnId.startAnimation(fromDownMoveAnim)
 //        mBinding.noLoginButtonId.startAnimation(fromLeftMoveAnim)
+        RxTextView.textChanges(mBinding.loginEditTextTextPassword)
+
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { passwordValidate(mBinding.loginEditTextTextPassword.text.toString()) }
 
     }
 
-    override fun onStart() {
-        super.onStart()
+
+
+private fun passwordValidate(password: String) {
+    Log.d(TAG, "passwordValidate: ${mBinding.loginEditTextTextPassword.length()}")
+    if (password.length > 9 || password.isEmpty()) {
+        mBinding.passwordAlertRegisterId.visibility = View.GONE
+    } else {
+        mBinding.passwordAlertRegisterId.visibility = View.VISIBLE
+    }
+}
+
+override fun onClick(v: View) {
+    if (v.id == R.id.register_btn_id) {
+
+        val userName = mBinding.loginEditTextTextPersonName.text.toString()
+        val userPassword = mBinding.loginEditTextTextPassword.text.toString()
+
+        userResponse = authViewModel.createUserResponse(userName, userPassword)
+
+        authViewModel.registerUser(userResponse!!)
+
 
     }
-
-    override fun onClick(v: View) {
-        if (v.id == R.id.register_btn_id) {
-
-            val userName = mBinding.loginEditTextTextPersonName.text.toString()
-            val userPassword = mBinding.loginEditTextTextPassword.text.toString()
-
-            userResponse = authViewModel.createUserResponse(userName, userPassword)
-
-            authViewModel.registerUser(userResponse!!)
-
-
+    if (v.id == R.id.no_login_button_id) {
+        Intent(requireContext(), MainActivity::class.java).also {
+            startActivity(it)
+            requireActivity().finish()
         }
-        if (v.id == R.id.no_login_button_id) {
-            Intent(requireContext(), MainActivity::class.java).also {
-                startActivity(it)
-                requireActivity().finish()
-            }
-        }
     }
+}
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+override fun onDestroyView() {
+    super.onDestroyView()
+    _binding = null
+}
 }
