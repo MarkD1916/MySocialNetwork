@@ -1,15 +1,11 @@
 package com.vmakd1916gmail.com.login_logout_register.repositories.auth
 
-import androidx.lifecycle.LiveData
-import com.vmakd1916gmail.com.login_logout_register.DB.MySocialNetworkDAO
-import com.vmakd1916gmail.com.login_logout_register.models.Token
+import com.vmakd1916gmail.com.login_logout_register.api.AuthApi
 import com.vmakd1916gmail.com.login_logout_register.models.network.TokenResponse
 import com.vmakd1916gmail.com.login_logout_register.models.network.UserResponse
 import com.vmakd1916gmail.com.login_logout_register.other.Resource
 import com.vmakd1916gmail.com.login_logout_register.other.getAuthDataFromServer
 import com.vmakd1916gmail.com.login_logout_register.other.safeCall
-import com.vmakd1916gmail.com.login_logout_register.api.AuthApi
-import com.vmakd1916gmail.com.login_logout_register.other.TokenPreferences
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.Response
@@ -40,6 +36,16 @@ class AuthRepositoryImpl @Inject constructor(
         return withContext(Dispatchers.IO) {
             safeCall {
                 val call = authApi.authUser(user)
+                val result = getAuthDataFromServer(call)
+                Resource.Success(result)
+            }
+        }
+    }
+
+    suspend fun logoutUser(): Resource<Response<Any>> {
+        return withContext(Dispatchers.IO) {
+            safeCall {
+                val call = authApi.logoutUser()
                 val result = getAuthDataFromServer(call)
                 Resource.Success(result)
             }

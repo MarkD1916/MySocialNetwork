@@ -1,7 +1,5 @@
 package com.vmakd1916gmail.com.login_logout_register.other
 
-import android.util.Log
-import com.vmakd1916gmail.com.login_logout_register.api.AuthApi
 import com.vmakd1916gmail.com.login_logout_register.repositories.auth.Variables
 import okhttp3.*
 import javax.inject.Inject
@@ -16,30 +14,20 @@ class RequestTokenInterceptor @Inject constructor(
 
         try {
             val token = tokenPreferences.getStoredToken()
-            when (request.method()) {
+            return when (request.method()) {
                 "GET" -> {
-                    if (token != "") {
-                        val newRequest =
-                            request.newBuilder().addHeader("Authorization", "Token $token")
-                                .method(request.method(), request.body())
-                                .build()
-                        return chain.proceed(newRequest)
-                    } else {
-                        val newRequest =
-                            request.newBuilder()
-                                .method(request.method(), request.body())
-                                .build()
-                        return chain.proceed(newRequest)
-                    }
+                    getResponse(token, request, chain)
+                }
+                "POST" -> {
+                    getResponse(token, request, chain)
                 }
                 else -> {
                     val newRequest = request.newBuilder()
                         .build()
-                    return chain.proceed(newRequest)
+                    chain.proceed(newRequest)
                 }
             }
-        }
-        catch (e:java.lang.Exception){
+        } catch (e: java.lang.Exception) {
             if (!Variables.isNetworkConnected) {
                 safeCall<Any> {
                     throw Exception("No Internet connection")
@@ -50,8 +38,7 @@ class RequestTokenInterceptor @Inject constructor(
                     .code(999)
                     .message("No Internet connection")
                     .body(ResponseBody.create(null, "{${e}}")).build()
-            }
-            else{
+            } else {
                 safeCall<Any> {
                     throw Exception(e.message)
                 }
@@ -65,8 +52,25 @@ class RequestTokenInterceptor @Inject constructor(
 
         }
 
+    }
+
+
+    private fun getResponse(token: String, request: Request, chain: Interceptor.Chain): Response {
+        return if (token != "") {
+            val newRequest =
+                request.newBuilder().addHeader("Authorization", "Token $token")
+                    .method(request.method(), request.body())
+                    .build()
+            chain.proceed(newRequest)
+        } else {
+            val newRequest =
+                request.newBuilder()
+                    .method(request.method(), request.body())
+                    .build()
+            chain.proceed(newRequest)
         }
     }
+}
 
 
 

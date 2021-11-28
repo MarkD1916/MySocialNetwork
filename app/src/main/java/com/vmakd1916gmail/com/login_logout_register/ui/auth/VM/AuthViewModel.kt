@@ -54,9 +54,23 @@ class AuthViewModel @Inject constructor(
             else {
                 _authStatus.postValue(Event(Resource.Error(response.message!!)))
             }
-
         }
+    }
 
+    private val _logoutStatus = MutableLiveData<Event<Resource<Any>>>()
+    val logoutStatus:LiveData<Event<Resource<Any>>> = _logoutStatus
+
+    fun logoutUser(){
+        _logoutStatus.postValue(Event(Resource.Loading()))
+        viewModelScope.launch(Dispatchers.IO) {
+            val response = repository.logoutUser()
+            if (response.data!=null) {
+                _logoutStatus.postValue(Event(Resource.Success(Unit)))
+            }
+            else {
+                _logoutStatus.postValue(Event(Resource.Error(response.message!!)))
+            }
+        }
     }
 
     private fun createUser(user: UserResponse?): User {
