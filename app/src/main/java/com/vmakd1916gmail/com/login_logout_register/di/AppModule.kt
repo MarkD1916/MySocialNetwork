@@ -10,8 +10,10 @@ import com.vmakd1916gmail.com.login_logout_register.DB.MySocialNetworkDatabase
 import com.vmakd1916gmail.com.login_logout_register.R
 import com.vmakd1916gmail.com.login_logout_register.repositories.auth.AuthRepositoryImpl
 import com.vmakd1916gmail.com.login_logout_register.api.AuthApi
+import com.vmakd1916gmail.com.login_logout_register.api.PostApi
 import com.vmakd1916gmail.com.login_logout_register.other.RequestTokenInterceptor
 import com.vmakd1916gmail.com.login_logout_register.other.TokenPreferences
+import com.vmakd1916gmail.com.login_logout_register.repositories.main.MainRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -51,7 +53,7 @@ object AppModule {
         TokenPreferences(context)
 
     @Provides
-    fun providesBaseUrl(): String = "https://vmakd1916mdsocialnetworkserver.herokuapp.com"
+    fun providesBaseUrl(): String = "https://vmakd1916mdsocialnetwork.herokuapp.com"
 
     @Provides
     @Singleton
@@ -75,7 +77,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthService(retrofit: Retrofit): AuthApi =
+    fun provideAuthApi(retrofit: Retrofit): AuthApi =
         retrofit.create(AuthApi::class.java)
 
     @Provides
@@ -83,6 +85,18 @@ object AppModule {
     fun provideAuthRepository(
         authApi: AuthApi
     ): AuthRepositoryImpl = AuthRepositoryImpl(authApi)
+
+
+    @Provides
+    @Singleton
+    fun providePostApi(retrofit: Retrofit): PostApi =
+        retrofit.create(PostApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideMainRepository(
+        postApi: PostApi
+    ): MainRepositoryImpl = MainRepositoryImpl(postApi)
 
 
     @Provides

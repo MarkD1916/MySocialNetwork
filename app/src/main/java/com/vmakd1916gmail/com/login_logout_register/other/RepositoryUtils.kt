@@ -1,11 +1,17 @@
 package com.vmakd1916gmail.com.login_logout_register.other
 
+import android.util.Log
+import androidx.paging.PagingData
+import com.vmakd1916gmail.com.login_logout_register.models.network.PostResponse
+import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 inline fun <T> safeCall(action: () -> Resource<T>): Resource<T> {
+
     return try {
         action()
     } catch (e: Exception) {
+        Log.d( "safeCall", "safeCall: $e")
         Resource.Error(e.message ?: "An unknown error occurred")
     }
 }
@@ -17,5 +23,5 @@ fun <T> getAuthDataFromServer(response: Response<T>): Response<T> {
     } else {
         throw Exception(response.message())
     }
-
 }
+

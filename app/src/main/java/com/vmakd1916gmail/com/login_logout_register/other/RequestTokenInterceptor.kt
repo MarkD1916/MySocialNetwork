@@ -1,5 +1,6 @@
 package com.vmakd1916gmail.com.login_logout_register.other
 
+import android.util.Log
 import com.vmakd1916gmail.com.login_logout_register.repositories.auth.Variables
 import okhttp3.*
 import javax.inject.Inject
@@ -40,6 +41,7 @@ class RequestTokenInterceptor @Inject constructor(
                     .body(ResponseBody.create(null, "{${e}}")).build()
             } else {
                 safeCall<Any> {
+                    Log.d(TAG, "intercept: ")
                     throw Exception(e.message)
                 }
                 return Response.Builder()

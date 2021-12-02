@@ -20,6 +20,8 @@ import com.vmakd1916gmail.com.login_logout_register.ui.auth.AuthActivity
 import com.vmakd1916gmail.com.login_logout_register.ui.auth.VM.AuthViewModel
 import com.vmakd1916gmail.com.login_logout_register.ui.snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 private const val TAG = "MainActivity"
