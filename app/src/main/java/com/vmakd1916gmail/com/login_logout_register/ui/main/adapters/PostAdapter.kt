@@ -30,6 +30,9 @@ class PostAdapter :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: PostResponse) = with(this.binding) {
             postTitleId.text = item.postTitle
+            postDateId.text = item.postDate
+            postAuthorId.text = item.author
+            postCountLikeId.text = item.likes_count.toString()
         }
 
     }

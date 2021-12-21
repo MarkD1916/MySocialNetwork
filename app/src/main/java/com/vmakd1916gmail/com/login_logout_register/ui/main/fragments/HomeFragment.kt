@@ -1,6 +1,5 @@
 package com.vmakd1916gmail.com.login_logout_register.ui.main.fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,12 +11,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmakd1916gmail.com.login_logout_register.databinding.FragmentHomeBinding
 import com.vmakd1916gmail.com.login_logout_register.other.EventObserver
-import com.vmakd1916gmail.com.login_logout_register.ui.auth.VM.AuthViewModel
-import com.vmakd1916gmail.com.login_logout_register.ui.main.MainActivity
 import com.vmakd1916gmail.com.login_logout_register.ui.main.VM.HomeViewModel
 import com.vmakd1916gmail.com.login_logout_register.ui.main.adapters.PostAdapter
 import com.vmakd1916gmail.com.login_logout_register.ui.snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
 import kotlinx.coroutines.flow.collectLatest
 
 private const val TAG = "HomeFragment"
@@ -46,6 +44,14 @@ class HomeFragment : Fragment() {
         mBinding.allPostRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = postAdapter
+            itemAnimator = SlideInLeftAnimator()
+        }
+
+        (mBinding.allPostRecyclerView.itemAnimator as SlideInLeftAnimator).apply {
+            addDuration = 400
+            removeDuration = 400
+            moveDuration = 300
+            changeDuration = 600
         }
 
         homeViewModel.post.observe(viewLifecycleOwner, EventObserver(
@@ -68,15 +74,6 @@ class HomeFragment : Fragment() {
         )
 
         homeViewModel.getPost()
-
-
-
-
-//        viewLifecycleOwner.lifecycleScope.launchWhenCreated {
-//            viewModel.charactersFlow.collectLatest { pagingData ->
-//                characterAdapter.submitData(pagingData)
-//            }
-//    }
 
     }
 }
