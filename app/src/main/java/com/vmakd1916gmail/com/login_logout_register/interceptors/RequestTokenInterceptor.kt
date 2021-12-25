@@ -1,6 +1,7 @@
-package com.vmakd1916gmail.com.login_logout_register.other
+package com.vmakd1916gmail.com.login_logout_register.interceptors
 
 import android.util.Log
+import com.vmakd1916gmail.com.login_logout_register.other.TokenPreferences
 import com.vmakd1916gmail.com.login_logout_register.repositories.auth.Variables
 import okhttp3.*
 import javax.inject.Inject
@@ -30,9 +31,6 @@ class RequestTokenInterceptor @Inject constructor(
             }
         } catch (e: java.lang.Exception) {
             if (!Variables.isNetworkConnected) {
-                safeCall<Any> {
-                    throw Exception("No Internet connection")
-                }
                 return Response.Builder()
                     .request(request)
                     .protocol(Protocol.HTTP_1_1)
@@ -40,10 +38,6 @@ class RequestTokenInterceptor @Inject constructor(
                     .message("No Internet connection")
                     .body(ResponseBody.create(null, "{${e}}")).build()
             } else {
-                safeCall<Any> {
-                    Log.d(TAG, "intercept: ")
-                    throw Exception(e.message)
-                }
                 return Response.Builder()
                     .request(request)
                     .protocol(Protocol.HTTP_1_1)

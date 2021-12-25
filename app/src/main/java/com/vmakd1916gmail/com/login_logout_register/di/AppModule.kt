@@ -5,13 +5,15 @@ import androidx.room.Room
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.vmakd1916gmail.com.login_logout_register.DB.MySocialNetworkDAO
+
 import com.vmakd1916gmail.com.login_logout_register.DB.MySocialNetworkDatabase
 import com.vmakd1916gmail.com.login_logout_register.R
 import com.vmakd1916gmail.com.login_logout_register.repositories.auth.AuthRepositoryImpl
 import com.vmakd1916gmail.com.login_logout_register.api.AuthApi
 import com.vmakd1916gmail.com.login_logout_register.api.PostApi
-import com.vmakd1916gmail.com.login_logout_register.other.RequestTokenInterceptor
+import com.vmakd1916gmail.com.login_logout_register.interceptors.RequestTokenInterceptor
+import com.vmakd1916gmail.com.login_logout_register.DB.PostDAO
+import com.vmakd1916gmail.com.login_logout_register.DB.RemotePostKeyDAO
 import com.vmakd1916gmail.com.login_logout_register.other.TokenPreferences
 import com.vmakd1916gmail.com.login_logout_register.repositories.main.MainRepositoryImpl
 import dagger.Module
@@ -95,8 +97,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideMainRepository(
-        postApi: PostApi
-    ): MainRepositoryImpl = MainRepositoryImpl(postApi)
+        postApi: PostApi,
+        postDao: PostDAO,
+        postKeyDAO: RemotePostKeyDAO
+    ): MainRepositoryImpl = MainRepositoryImpl(postApi, postDao,postKeyDAO)
 
 
     @Provides
@@ -114,8 +118,12 @@ object AppModule {
     @Module
     class DatabaseModule {
         @Provides
-        fun provideMySocialNetworkDao(appDatabase: MySocialNetworkDatabase): MySocialNetworkDAO {
-            return appDatabase.mySocialNetworkDAO()
+        fun providePostDAO(appDatabase: MySocialNetworkDatabase): PostDAO {
+            return appDatabase.PostDAO()
+        }
+        @Provides
+        fun provideRemotePostKeyDAO(appDatabase: MySocialNetworkDatabase): RemotePostKeyDAO {
+            return appDatabase.RemotePostKeyDAO()
         }
     }
 

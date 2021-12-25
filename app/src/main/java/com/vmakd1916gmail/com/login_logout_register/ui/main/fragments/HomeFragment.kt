@@ -8,10 +8,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.ExperimentalPagingApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmakd1916gmail.com.login_logout_register.databinding.FragmentHomeBinding
+import com.vmakd1916gmail.com.login_logout_register.models.network.PostResponse
 import com.vmakd1916gmail.com.login_logout_register.other.EventObserver
 import com.vmakd1916gmail.com.login_logout_register.ui.main.VM.HomeViewModel
+import com.vmakd1916gmail.com.login_logout_register.ui.main.adapters.AdapterActionListener
 import com.vmakd1916gmail.com.login_logout_register.ui.main.adapters.PostAdapter
 import com.vmakd1916gmail.com.login_logout_register.ui.snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,10 +39,29 @@ class HomeFragment : Fragment() {
         return mBinding.root
     }
 
+    @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val postAdapter = PostAdapter()
+        val postAdapter = PostAdapter(object : AdapterActionListener {
+
+            override fun expandItem(item: PostResponse) {
+
+            }
+
+            override fun collapseItem(item: PostResponse) {
+
+            }
+
+            override fun itemClick(item: PostResponse) {
+//                val bundle = Bundle()
+//                bundle.putSerializable("event", item)
+//                APP_ACTIVITY.navController.navigate(
+//                    R.id.action_crimeListFragment_to_addedCrimeFragment,
+//                    bundle
+//                )
+            }
+        })
 
         mBinding.allPostRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)

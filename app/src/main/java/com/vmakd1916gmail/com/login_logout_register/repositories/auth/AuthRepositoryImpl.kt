@@ -17,9 +17,7 @@ class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi
 ) {
 
-
-
-    suspend fun registerUser(userResponse: UserResponse):Resource<Response<UserResponse>> {
+    suspend fun registerUser(userResponse: UserResponse): Resource<Response<UserResponse>> {
 
         return withContext(Dispatchers.IO) {
             safeCall {
