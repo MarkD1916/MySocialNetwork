@@ -2,15 +2,17 @@ package com.vmakd1916gmail.com.login_logout_register.paging.datasource
 
 import android.net.Uri
 import android.util.Log
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.vmakd1916gmail.com.login_logout_register.DB.PostDAO
 import com.vmakd1916gmail.com.login_logout_register.api.PostApi
 import com.vmakd1916gmail.com.login_logout_register.models.network.PostResponse
 
-class PostPageSource(private val postApi: PostApi, private val postDAO: PostDAO) :
+class PostPageSource(private val postApi: PostApi) :
     PagingSource<Int, PostResponse>() {
     private val TAG = "PostPageSource"
+    @ExperimentalPagingApi
     override fun getRefreshKey(state: PagingState<Int, PostResponse>): Int? {
         return state.anchorPosition?.let {
             state.closestPageToPosition(it)?.prevKey?.plus(1)

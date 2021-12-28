@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmakd1916gmail.com.login_logout_register.databinding.FragmentHomeBinding
 import com.vmakd1916gmail.com.login_logout_register.models.network.PostResponse
@@ -19,7 +20,11 @@ import com.vmakd1916gmail.com.login_logout_register.ui.main.adapters.PostAdapter
 import com.vmakd1916gmail.com.login_logout_register.ui.snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.launch
 
 private const val TAG = "HomeFragment"
 
@@ -54,27 +59,22 @@ class HomeFragment : Fragment() {
             }
 
             override fun itemClick(item: PostResponse) {
-//                val bundle = Bundle()
-//                bundle.putSerializable("event", item)
-//                APP_ACTIVITY.navController.navigate(
-//                    R.id.action_crimeListFragment_to_addedCrimeFragment,
-//                    bundle
-//                )
+
             }
         })
 
         mBinding.allPostRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = postAdapter
-            itemAnimator = SlideInLeftAnimator()
+            //itemAnimator = SlideInLeftAnimator()
         }
 
-        (mBinding.allPostRecyclerView.itemAnimator as SlideInLeftAnimator).apply {
-            addDuration = 400
-            removeDuration = 400
-            moveDuration = 300
-            changeDuration = 600
-        }
+//        (mBinding.allPostRecyclerView.itemAnimator as SlideInLeftAnimator).apply {
+//            addDuration = 400
+//            removeDuration = 400
+//            moveDuration = 300
+//            changeDuration = 600
+//        }
 
         homeViewModel.post.observe(viewLifecycleOwner, EventObserver(
             onError = {
@@ -87,15 +87,20 @@ class HomeFragment : Fragment() {
         ) {
             Log.d(TAG, "onViewCreated: ${it}")
             viewLifecycleOwner.lifecycleScope.launchWhenCreated {
+
                 it.collectLatest {
                     Log.d(TAG, "onViewCreated: $it")
                     postAdapter.submitData(it)
                 }
+
             }
         }
         )
+        
 
         homeViewModel.getPost()
 
     }
+
+
 }

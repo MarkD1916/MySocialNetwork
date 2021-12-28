@@ -16,7 +16,7 @@ interface PostDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(posts: List<PostResponse>)
 
-    @Query("SELECT * FROM post_table")
+    @Query("SELECT * FROM post_table ORDER BY postId")
     fun pagingSource(): PagingSource<Int, PostResponse>
 
     @Query("DELETE FROM post_table")
@@ -30,7 +30,7 @@ interface RemotePostKeyDAO {
     suspend fun insertOrReplace(pageKey: PageKey)
 
     @Query("SELECT * FROM pageKey WHERE id LIKE :id")
-    fun getNextPageKey(id: Int): PageKey?
+    suspend fun getNextPageKey(id: Int): PageKey?
 
     @Query("DELETE FROM pageKey")
     suspend fun clearAll()

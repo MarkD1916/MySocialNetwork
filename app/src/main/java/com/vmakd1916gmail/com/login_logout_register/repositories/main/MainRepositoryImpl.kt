@@ -5,6 +5,7 @@ import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import com.vmakd1916gmail.com.login_logout_register.DB.MySocialNetworkDatabase
 import com.vmakd1916gmail.com.login_logout_register.DB.PostDAO
 import com.vmakd1916gmail.com.login_logout_register.DB.RemotePostKeyDAO
 import com.vmakd1916gmail.com.login_logout_register.api.PostApi
@@ -27,7 +28,8 @@ private const val TAG = "MainRepositoryImpl"
 class MainRepositoryImpl @Inject constructor(
     private val postApi: PostApi,
     private val postDAO: PostDAO,
-    private val postKeyDAO: RemotePostKeyDAO
+    private val postKeyDAO: RemotePostKeyDAO,
+    private val db: MySocialNetworkDatabase
 ) {
 
 
@@ -35,22 +37,31 @@ class MainRepositoryImpl @Inject constructor(
     suspend fun getPostFromNetwork(): Resource<Flow<PagingData<PostResponse>>> {
 
         return withContext(Dispatchers.IO) {
-            safeCall {
-                val call =
-                    Pager(
-                        config = PagingConfig(
-                            pageSize = 3,
-                            maxSize = 9,
-                            enablePlaceholders = true
-                        ),
-                        remoteMediator = PostRemoteMediator(postApi, postDAO, postKeyDAO)
-                    )
-                    {
-                        postDAO.pagingSource()
-                    }.flow
-                Log.d(TAG, "getPost: $call")
-                Resource.Success(call)
-            }
+
+                    val call =
+                        Pager(
+                            config = PagingConfig(
+                                pageSize = 3,
+                                maxSize = 9
+                            ),
+                            remoteMediator = PostRemoteMediator(postApi, postDAO, postKeyDAO, db),
+                        )
+                        {
+                            postDAO.pagingSource()
+                        }.flow
+//                    Log.d(TAG, "getPost: $call")
+//                    val call = //postApi.getPost(1)
+//                        Pager(
+//                            config = PagingConfig(
+//                                pageSize = 3,
+//                                maxSize = 9,
+//                                enablePlaceholders = true
+//                            ),
+//                            pagingSourceFactory = { PostPageSource(postApi) }
+//                        ).flow
+                    Resource.Success(call)
+
+
 
         }
     }

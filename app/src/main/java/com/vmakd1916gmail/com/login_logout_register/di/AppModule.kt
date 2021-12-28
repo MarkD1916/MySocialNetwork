@@ -99,8 +99,9 @@ object AppModule {
     fun provideMainRepository(
         postApi: PostApi,
         postDao: PostDAO,
-        postKeyDAO: RemotePostKeyDAO
-    ): MainRepositoryImpl = MainRepositoryImpl(postApi, postDao,postKeyDAO)
+        postKeyDAO: RemotePostKeyDAO,
+        db:MySocialNetworkDatabase
+    ): MainRepositoryImpl = MainRepositoryImpl(postApi, postDao,postKeyDAO,db)
 
 
     @Provides
