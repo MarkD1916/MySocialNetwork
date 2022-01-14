@@ -14,9 +14,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.vmakd1916gmail.com.login_logout_register.databinding.FragmentHomeBinding
 import com.vmakd1916gmail.com.login_logout_register.models.network.PostResponse
 import com.vmakd1916gmail.com.login_logout_register.other.EventObserver
+import com.vmakd1916gmail.com.login_logout_register.other.Resource
+import com.vmakd1916gmail.com.login_logout_register.repositories.auth.Variables
 import com.vmakd1916gmail.com.login_logout_register.ui.main.VM.HomeViewModel
 import com.vmakd1916gmail.com.login_logout_register.ui.main.adapters.AdapterActionListener
 import com.vmakd1916gmail.com.login_logout_register.ui.main.adapters.PostAdapter
+import com.vmakd1916gmail.com.login_logout_register.ui.noInternetAlert
 import com.vmakd1916gmail.com.login_logout_register.ui.snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
@@ -47,7 +50,7 @@ class HomeFragment : Fragment() {
     @ExperimentalPagingApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        //noInternetAlert()
         val postAdapter = PostAdapter(object : AdapterActionListener {
 
             override fun expandItem(item: PostResponse) {
@@ -85,6 +88,7 @@ class HomeFragment : Fragment() {
             }
 
         ) {
+            noInternetAlert()
             Log.d(TAG, "onViewCreated: ${it}")
             viewLifecycleOwner.lifecycleScope.launchWhenCreated {
 
@@ -92,12 +96,9 @@ class HomeFragment : Fragment() {
                     Log.d(TAG, "onViewCreated: $it")
                     postAdapter.submitData(it)
                 }
-
             }
         }
         )
-        
-
         homeViewModel.getPost()
 
     }

@@ -14,6 +14,7 @@ import com.vmakd1916gmail.com.login_logout_register.models.network.PostResponse
 import com.vmakd1916gmail.com.login_logout_register.other.Resource
 import com.vmakd1916gmail.com.login_logout_register.other.safeCall
 import com.vmakd1916gmail.com.login_logout_register.paging.remote_mediator.PostRemoteMediator
+import com.vmakd1916gmail.com.login_logout_register.repositories.auth.Variables
 import dagger.hilt.android.scopes.ActivityScoped
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -37,32 +38,34 @@ class MainRepositoryImpl @Inject constructor(
     suspend fun getPostFromNetwork(): Resource<Flow<PagingData<PostResponse>>> {
 
         return withContext(Dispatchers.IO) {
+            safeCall {
+                val call =
+                    Pager(
+                        config = PagingConfig(
+                            pageSize = 3,
+                            maxSize = 9
+                        ),
+                        remoteMediator = PostRemoteMediator(postApi, postDAO, postKeyDAO, db),
+                    )
+                    {
+                        postDAO.pagingSource()
+                    }.flow
+                Log.d(TAG, "getPost: $call")
+                Resource.Success(call)
 
-                    val call =
-                        Pager(
-                            config = PagingConfig(
-                                pageSize = 3,
-                                maxSize = 9
-                            ),
-                            remoteMediator = PostRemoteMediator(postApi, postDAO, postKeyDAO, db),
-                        )
-                        {
-                            postDAO.pagingSource()
-                        }.flow
-//                    Log.d(TAG, "getPost: $call")
-//                    val call = //postApi.getPost(1)
-//                        Pager(
-//                            config = PagingConfig(
-//                                pageSize = 3,
-//                                maxSize = 9,
-//                                enablePlaceholders = true
-//                            ),
-//                            pagingSourceFactory = { PostPageSource(postApi) }
-//                        ).flow
-                    Resource.Success(call)
-
-
-
+            }
+//            safeCall {
+//                val call = //postApi.getPost(1)
+//                    Pager(
+//                        config = PagingConfig(
+//                            pageSize = 3,
+//                            maxSize = 9,
+//                            enablePlaceholders = true
+//                        ),
+//                        pagingSourceFactory = { PostPageSource(postApi) }
+//                    ).flow
+//                Resource.Success(call)
+//            }
         }
     }
 

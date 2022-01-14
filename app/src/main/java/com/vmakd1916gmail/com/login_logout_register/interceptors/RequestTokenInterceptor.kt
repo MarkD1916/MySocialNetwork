@@ -14,7 +14,6 @@ class RequestTokenInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val request: Request = chain.request()
 
-        try {
             val token = tokenPreferences.getStoredToken()
             return when (request.method()) {
                 "GET" -> {
@@ -29,24 +28,6 @@ class RequestTokenInterceptor @Inject constructor(
                     chain.proceed(newRequest)
                 }
             }
-        } catch (e: java.lang.Exception) {
-            if (!Variables.isNetworkConnected) {
-                return Response.Builder()
-                    .request(request)
-                    .protocol(Protocol.HTTP_1_1)
-                    .code(999)
-                    .message("No Internet connection")
-                    .body(ResponseBody.create(null, "{${e}}")).build()
-            } else {
-                return Response.Builder()
-                    .request(request)
-                    .protocol(Protocol.HTTP_1_1)
-                    .code(999)
-                    .message(e.message)
-                    .body(ResponseBody.create(null, "{${e}}")).build()
-            }
-
-        }
 
     }
 
